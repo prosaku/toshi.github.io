@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>複利シミュレーター</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  </head>
+  <body class="p-4">
+    <h1>複利投資シミュレーター</h1>
+    <form id="calcForm">
+      <label>年収（円）</label>
+      <input type="number" id="income" class="form-control" />
+      <label>投資率（%）</label>
+      <input type="number" id="rate" class="form-control" />
+      <label>利率（年利%）</label>
+      <input type="number" id="interest" class="form-control" />
+      <label>投資期間（年）</label>
+      <input type="number" id="years" class="form-control" />
+      <button type="submit" class="btn btn-primary mt-3">計算する</button>
+    </form>
+    <div id="result" class="mt-4"></div>
+    <canvas id="chart" width="400" height="200"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      document.getElementById("calcForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const income = Number(document.getElementById("income").value);
+        const rate = Number(document.getElementById("rate").value) / 100;
+        const interest = Number(document.getElementById("interest").value) / 100;
+        const years = Number(document.getElementById("years").value);
+        const annualInvestment = income * rate;
+
+        let total = 0;
+        const data = [];
+        for (let i = 1; i <= years; i++) {
+          total = (total + annualInvestment) * (1 + interest);
+          data.push(Math.round(total));
+        }
+
+        document.getElementById("result").innerText = `最終資産額：¥${Math.round(total).toLocaleString()}`;
+
+        new Chart(document.getElementById("chart"), {
+          type: "line",
+          data: {
+            labels: Array.from({length: years}, (_, i) => `${i + 1}年目`),
+            datasets: [{
+              label: "資産推移",
+              data: data,
+              borderColor: "blue",
+              fill: false
+            }]
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
